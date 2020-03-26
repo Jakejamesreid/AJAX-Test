@@ -1,8 +1,9 @@
-function getData(cb){
+const baseURL = "https://swapi.co/api/";
+function getData(type, cb){
     // xhr = XmlHttpRequest
     var xhr = new XMLHttpRequest(); 
 
-    xhr.open("GET", "https://swapi.co/api/");
+    xhr.open("GET", baseURL+type+"/");
     xhr.send();
 
     /* xhr Ready States
@@ -22,9 +23,16 @@ function getData(cb){
     };
 }
 
-function printDataToConsole(data){
-    console.log(data);
-}
+function writeToDocument(type){
 
-// Use Inspect in Google Chrome to view result
-getData(printDataToConsole);
+    var el = document.getElementById("data");
+    el.innerHTML = "";
+
+    getData(type, function (data){
+        data = data.results;
+
+        data.forEach(function(item){
+            document.getElementById("data").innerHTML += "<p>" + item.name + "</p>";
+        });
+    });
+}
