@@ -40,7 +40,7 @@ function writeToDocument(type){
     var el = document.getElementById("data");
     el.innerHTML = "";
 
-    getData(type, function (data){
+    getData(type, function(data){
         data = data.results;
         var tableHeaders = getTableHeaders(data[0]);
 
@@ -50,7 +50,7 @@ function writeToDocument(type){
             Object.keys(item).forEach(function(key){
                 dataRow.push(`<td>${item[key]}</td>`);
             });
-            tableRows.push(dataRow);
+            tableRows.push(`<tr>${dataRow}</tr>`);
         });
 
         el.innerHTML = `<table>${tableHeaders}${tableRows}</table>`;
