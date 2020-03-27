@@ -1,10 +1,6 @@
-const baseURL = "https://swapi.co/api/";
-function getData(type, cb){
+function getData(URL, cb){
     // xhr = XmlHttpRequest
     var xhr = new XMLHttpRequest(); 
-
-    xhr.open("GET", baseURL+type+"/");
-    xhr.send();
 
     /* xhr Ready States
     0 Unsent
@@ -21,6 +17,9 @@ function getData(type, cb){
             cb(JSON.parse(this.responseText));
         }
     };
+
+    xhr.open("GET", URL);
+    xhr.send();
 }
 
 
@@ -34,13 +33,33 @@ function getTableHeaders(obj){
     return `<tr>${tableHeaders}</tr>`;
 }
 
-function writeToDocument(type){
+
+function generatePaginationButtons(next, prev){
+    if(next && prev){
+        return `<button onclick="writeToDocument('${prev}')">Previous</button>
+                <button onclick="writeToDocument('${next}')">Next</button>`;
+    }
+    else if(next && !prev){
+        return `<button onclick="writeToDocument('${next}')">Next</button>`;
+    }
+    else if(!next && pev){
+        return `<button onclick="writeToDocument('${prev}')">Previous</button>`;
+    }
+}
+
+
+function writeToDocument(URL){
 
     var tableRows = [];
     var el = document.getElementById("data");
     el.innerHTML = "";
 
-    getData(type, function(data){
+    getData(URL, function(data){
+        var pagination;
+        if(data.next || data.previous){
+            pagination = generatePaginationButtons(data.next, data.previous);
+        }
+
         data = data.results;
         var tableHeaders = getTableHeaders(data[0]);
 
@@ -48,11 +67,13 @@ function writeToDocument(type){
             var dataRow = [];
 
             Object.keys(item).forEach(function(key){
-                dataRow.push(`<td>${item[key]}</td>`);
+                var rowData = item[key].toString();
+                var truncatedData = rowData.substring(0, 15);
+                dataRow.push(`<td>${truncatedData}</td>`);
             });
             tableRows.push(`<tr>${dataRow}</tr>`);
         });
 
-        el.innerHTML = `<table>${tableHeaders}${tableRows}</table>`;
+        el.innerHTML = `<table>${tableHeaders}${tableRows}</table>${pagination}`;
     });
 }
